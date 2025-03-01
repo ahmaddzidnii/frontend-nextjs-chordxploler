@@ -85,13 +85,13 @@ const RenderListChord = () => {
   });
 
   useEffect(() => {
-    if (!isPlaceholderData && songs?.pagination.has_next_page) {
+    if (!isPlaceholderData && songs?.data.has_next_page) {
       queryClient.prefetchQuery({
         queryKey,
         queryFn: () => getSongs(page, limit),
       });
     }
-  }, [songs?.pagination, isPlaceholderData, queryClient, page, limit]);
+  }, [songs?.data, isPlaceholderData, queryClient, page, limit]);
 
   const [selectedItems, setSelectedItems] = useState<string[]>([]);
   const [isAllSelected, setIsAllSelected] = useState(false);
@@ -106,8 +106,8 @@ const RenderListChord = () => {
       if (songs) {
         // Check if all items are selected
         const isAllSelected =
-          songs?.data?.length > 0 &&
-          songs.data.every((data) => newSelectedItems.includes(String(data.id)));
+          songs?.data?.songs.length > 0 &&
+          songs.data.songs.every((data) => newSelectedItems.includes(String(data.id)));
 
         setIsAllSelected(isAllSelected);
       }
@@ -119,7 +119,7 @@ const RenderListChord = () => {
   // Handle select all checkbox
   const handleSelectAll = () => {
     setIsAllSelected(!isAllSelected);
-    setSelectedItems(!isAllSelected ? songs!!.data.map((data) => String(data.id)) : []);
+    setSelectedItems(!isAllSelected ? songs!!.data.songs.map((data) => String(data.id)) : []);
   };
 
   const handleItemsPerPageChange = (value: number) => {
@@ -226,7 +226,7 @@ const RenderListChord = () => {
             className="w-[50px] px-4 py-3 text-center"
           >
             <Checkbox
-              disabled={removeSongMutation.isPending || !songs?.data?.length}
+              disabled={removeSongMutation.isPending || !songs?.data?.songs.length}
               id="check-all"
               checked={isAllSelected}
               onCheckedChange={handleSelectAll}
@@ -271,7 +271,7 @@ const RenderListChord = () => {
         </div>
       </div>
       <DataRenderer
-        data={songs?.data}
+        data={songs?.data.songs}
         isLoading={isLoadingSongs || isFetchingSongs}
         isError={isErrorSongs}
         fallback={<EmptyFallback />}
@@ -317,7 +317,7 @@ const RenderListChord = () => {
                   />
                   <div className="flex-1 justify-start">
                     <p className="line-clamp-1">
-                      {item.artist.join(" ,")} - {item.title}
+                      {item.artists.join(" ,")} - {item.title}
                     </p>
                     <p className="line-clamp-1 text-sm">
                       12 views . <span>{formatDateToRelative(item.created_at)}</span>
@@ -337,7 +337,7 @@ const RenderListChord = () => {
                     className="aspect-square size-14 rounded-md mr-4"
                   />
                   <p className="hidden lg:block">
-                    {item.artist.join(" ,")} - {item.title}
+                    {item.artists.join(" ,")} - {item.title}
                   </p>
                 </div>
               </Link>
@@ -382,11 +382,33 @@ const RenderListChord = () => {
         <div className="w-full border-b flex justify-end ">
           <Pagination
             className="my-4"
-            pagination={songs?.pagination}
+            pagination={
+              songs
+                ? {
+                    current_item_count: songs?.data.current_item_count,
+                    total_items: songs?.data.total_items,
+                    total_pages: songs?.data.total_pages,
+                    items_per_page: songs?.data.items_per_page,
+                    current_page: songs?.data.current_page,
+                    has_next_page: songs?.data.has_next_page,
+                    has_previous_page: songs?.data.has_previous_page,
+                  }
+                : {
+                    current_item_count: 0,
+                    total_items: 0,
+                    total_pages: 0,
+                    items_per_page: 0,
+                    current_page: 0,
+                    has_next_page: false,
+                    has_previous_page: false,
+                  }
+            }
             initialItemsPerPage={Number(searchParams.get("limit") ?? 10)}
             itemsPerPageOptions={[10, 20, 30, 40, 50]}
             isPaginationLoading={isLoadingSongs || isFetchingSongs}
-            hidden={isErrorSongs}
+            hidden={
+              isErrorSongs || isLoadingSongs || isFetchingSongs || songs?.data.songs.length === 0
+            }
             onPageChange={handlePageChange}
             onItemsPerPageChange={handleItemsPerPageChange}
           />

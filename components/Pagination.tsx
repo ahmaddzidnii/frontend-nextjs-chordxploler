@@ -1,23 +1,30 @@
 import React, { useEffect, useState } from "react";
 import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-
-import {
   MdExpandMore,
   MdOutlineNavigateBefore,
   MdOutlineNavigateNext,
   MdSkipNext,
   MdSkipPrevious,
 } from "react-icons/md";
-
-import { Pagination as PaginationType } from "@/modules/studio/songs/api";
 import { IconType } from "react-icons/lib";
+
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import { cn } from "@/lib/utils";
 
+type PaginationType = {
+  current_item_count: number;
+  items_per_page: number;
+  current_page: number;
+  total_items: number;
+  total_pages: number;
+  has_next_page: boolean;
+  has_previous_page: boolean;
+};
 interface PaginationProps {
   pagination?: PaginationType;
   isPaginationLoading?: boolean;
@@ -38,12 +45,12 @@ const Pagination = ({
   onPageChange,
   onItemsPerPageChange,
 }: PaginationProps) => {
-  const [itemsPerPage, setItemsPerPage] = useState<number>(pagination?.items.per_page ?? 10);
+  const [itemsPerPage, setItemsPerPage] = useState<number>(pagination?.items_per_page ?? 10);
   const [currentPage, setCurrentPage] = useState(pagination?.current_page ?? 1);
-  const totalItems = pagination?.items.total!;
-  const totalPages = pagination?.last_visible_page!;
+  const totalItems = pagination?.total_items!;
+  const totalPages = pagination?.total_pages!;
   const hasNextPage = pagination?.has_next_page!;
-  const hasPreviousPage = pagination?.has_prev_page!;
+  const hasPreviousPage = pagination?.has_previous_page!;
 
   const handlePageChange = (newPage: number) => {
     if (newPage >= 1 && newPage <= totalPages) {
@@ -59,12 +66,12 @@ const Pagination = ({
 
   useEffect(() => {
     if (pagination) {
-      setItemsPerPage(pagination.items.per_page);
+      setItemsPerPage(pagination.items_per_page);
       setCurrentPage(pagination.current_page);
     }
   }, [pagination]);
 
-  if (!pagination || isPaginationLoading || pagination.items.count === 0 || hidden) {
+  if (!pagination || isPaginationLoading || hidden) {
     return null;
   }
 

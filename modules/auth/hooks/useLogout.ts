@@ -1,7 +1,6 @@
 import { useState } from "react";
 import { toast } from "react-toastify";
 import { getCookie } from "cookies-next";
-import { useRouter } from "next/navigation";
 import { useQueryClient } from "@tanstack/react-query";
 
 import { COOKIE_NAME_ACCESS_TOKEN } from "@/config/cookies";
@@ -10,7 +9,6 @@ import { axiosAuthenticatedInstance } from "@/lib/axiosAuthenticatedInstance";
 import { AuthLogoutResponseType } from "../types";
 
 export function useLogout() {
-  const router = useRouter();
   const [isLoadingLogout, setIsLoadingLogout] = useState(false);
 
   const queryClient = useQueryClient();
@@ -38,7 +36,7 @@ export function useLogout() {
       .then(() => {
         setIsLoadingLogout(false);
         queryClient.removeQueries(); // Remove all queries from the cache
-        router.refresh();
+        window.location.reload();
       })
       .catch((error) => {
         setIsLoadingLogout(false);

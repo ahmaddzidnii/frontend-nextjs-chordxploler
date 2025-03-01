@@ -1,56 +1,8 @@
 import { axiosAuthenticatedInstance } from "@/lib/axiosAuthenticatedInstance";
-import { SogInfoResponseType } from "./types";
-
-export interface Pagination {
-  last_visible_page: number;
-  has_next_page: boolean;
-  has_prev_page: boolean;
-  current_page: number;
-  items: Items;
-}
-
-export interface Items {
-  per_page: number;
-  count: number;
-  total: number;
-}
-
-export interface Key {
-  id: string;
-  key: string;
-  family_name: string;
-  family: string;
-}
-
-export interface Daum {
-  id: string;
-  user_id: string;
-  title: string;
-  artist: string[];
-  slug: string;
-  status: string;
-  genres: {
-    id: string;
-    name: string;
-  }[];
-  cover: string;
-  youtube_url: string;
-  released_year: number;
-  publisher: string;
-  bpm: number;
-  keys: Key[];
-  created_at: string;
-  updated_at: string;
-}
-
-type Songs = {
-  code: number;
-  pagination: Pagination;
-  data: Daum[];
-};
+import { SogInfoResponseType, SongGetManyResponseType } from "./types";
 
 export const getSongs = async (page: number, limit = 10) => {
-  const response = await axiosAuthenticatedInstance.get<Songs>(`/studio/songs`, {
+  const response = await axiosAuthenticatedInstance.get<SongGetManyResponseType>(`/studio/songs`, {
     params: {
       page,
       limit,
