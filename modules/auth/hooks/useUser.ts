@@ -4,14 +4,15 @@ import { useQuery } from "@tanstack/react-query";
 
 import { AuthUser } from "@/types";
 import { useAuth } from "./useAuth";
-import api from "@/modules/auth/api";
+import { AuthUserResposneType } from "../types";
+import { axiosAuthenticatedInstance } from "@/lib/axiosAuthenticatedInstance";
 
 export const useUser = () => {
   const { isAuthenticated } = useAuth();
   const { data, isLoading, isError, error } = useQuery({
     queryKey: ["user"],
     queryFn: async () => {
-      const response = await api.get("/users");
+      const response = await axiosAuthenticatedInstance.get<AuthUserResposneType>("/users");
       return response.data.data;
     },
     enabled: isAuthenticated,

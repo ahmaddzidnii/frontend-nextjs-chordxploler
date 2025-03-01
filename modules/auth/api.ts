@@ -2,19 +2,23 @@ import axios from "axios";
 import { getCookie, setCookie, deleteCookie } from "cookies-next";
 
 import { COOKIE_NAME_ACCESS_TOKEN, COOKIE_NAME_REFRESH_TOKEN } from "@/config/cookies";
+import { AuthRefershTokenResponseType } from "./types";
 
 // Create axios instance
 const api = axios.create({
-  baseURL: process.env.NEXT_PUBLIC_BACKEND_URL, // Replace with your API base URL
-  withCredentials: true, // Ensure cookies are sent with requests
+  baseURL: process.env.NEXT_PUBLIC_BACKEND_URL,
+  withCredentials: true,
 });
 
 // Function to refresh token
 const refreshAccessToken = async () => {
   try {
-    const response = await axios.get(`${process.env.NEXT_PUBLIC_BACKEND_URL}/auth/refresh`, {
-      withCredentials: true,
-    });
+    const response = await axios.get<AuthRefershTokenResponseType>(
+      `${process.env.NEXT_PUBLIC_BACKEND_URL}/auth/refresh`,
+      {
+        withCredentials: true,
+      }
+    );
 
     const { access_token } = response.data.data;
 

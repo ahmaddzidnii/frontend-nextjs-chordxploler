@@ -26,3 +26,5 @@ export type SogInfoResponseType = ApiResponseWithoutPaginationType<{
   created_at: string;
   updated_at: string;
 }>;
+
+export type SongGetManyResponseType = {};

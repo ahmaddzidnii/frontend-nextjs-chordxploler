@@ -7,6 +7,8 @@ import { useQueryClient } from "@tanstack/react-query";
 import { COOKIE_NAME_ACCESS_TOKEN } from "@/config/cookies";
 import { axiosAuthenticatedInstance } from "@/lib/axiosAuthenticatedInstance";
 
+import { AuthLogoutResponseType } from "../types";
+
 export function useLogout() {
   const router = useRouter();
   const [isLoadingLogout, setIsLoadingLogout] = useState(false);
@@ -16,7 +18,7 @@ export function useLogout() {
   const logout = ({ onError }: { onError?: (error: unknown) => void }) => {
     setIsLoadingLogout(true);
 
-    const logoutPromise = axiosAuthenticatedInstance.get(
+    const logoutPromise = axiosAuthenticatedInstance.get<AuthLogoutResponseType>(
       `${process.env.NEXT_PUBLIC_BACKEND_URL}/auth/logout`,
       {
         headers: {

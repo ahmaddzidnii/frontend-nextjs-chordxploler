@@ -3,6 +3,7 @@ import { NextRequest, NextResponse } from "next/server";
 
 import { AuthUser } from "@/types";
 import { COOKIE_NAME_ACCESS_TOKEN, COOKIE_NAME_REFRESH_TOKEN } from "@/config/cookies";
+import { AuthRefershTokenResponseType } from "@/modules/auth/types";
 
 interface AuthObject {
   isAuthenticated: boolean;
@@ -18,7 +19,7 @@ const createAuthObject = (isAuthenticated: boolean, user: AuthUser | null): Auth
 
 async function attemptTokenRefresh(refreshToken: string) {
   try {
-    const response = await fetch("http://127.0.0.1:8000/api/auth/refresh", {
+    const response = await fetch(`${process.env.BACKEND_URL}/auth/refresh`, {
       credentials: "include",
       method: "GET",
       headers: {
@@ -30,7 +31,7 @@ async function attemptTokenRefresh(refreshToken: string) {
       throw new Error(`Refresh token failed with status: ${response.status}`);
     }
 
-    const data = await response.json();
+    const data = (await response.json()) as AuthRefershTokenResponseType;
     return data.data.access_token;
   } catch (error) {
     console.error("Token refresh failed:", error);

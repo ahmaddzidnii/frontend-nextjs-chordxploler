@@ -1,6 +1,8 @@
 import axios from "axios";
 import { useQuery } from "@tanstack/react-query";
 
+import { AuthGoogleCallbackResponse } from "../types";
+
 export function useLoginWithGoogle() {
   const login = () => {
     const client_id = process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID;
@@ -21,14 +23,13 @@ export function useLoginWithGoogle() {
       queryKey: ["google", "callback"],
       retry: false,
       queryFn: async () => {
-        const response = await axios.get<{
-          status_code: number;
-          message: string;
-          data: { access_token: string };
-        }>(`${process.env.NEXT_PUBLIC_BACKEND_URL}/auth/oauth/google/callback`, {
-          params: { code },
-          withCredentials: true,
-        });
+        const response = await axios.get<AuthGoogleCallbackResponse>(
+          `${process.env.NEXT_PUBLIC_BACKEND_URL}/auth/oauth/google/callback`,
+          {
+            params: { code },
+            withCredentials: true,
+          }
+        );
 
         return response.data.data.access_token;
       },
